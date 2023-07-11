@@ -31,8 +31,4 @@ npm run e2e
 npm test
 ```
 
-<<<<<<< Updated upstream
 тест
-=======
-test
->>>>>>> Stashed changes
