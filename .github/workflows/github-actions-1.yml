@@ -3,7 +3,7 @@ name: CI-tests
 on: [pull_request]
 
 jobs:
-  commitlint:
+  tests:
     runs-on: windows-latest
 
     steps:
@@ -13,6 +13,15 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm test
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build --if-present
+
+      - name: Unit tests
+        run: npm test
+
+      - name: E2E tests
+        run: npm run e2e
