@@ -3,7 +3,7 @@ name: CI-tests
 on: [pull_request]
 
 jobs:
-  commitlint:
+  tests:
     runs-on: windows-latest
 
     steps:
