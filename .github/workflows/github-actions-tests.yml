@@ -4,6 +4,8 @@ on: [pull_request]
 
 jobs:
   tests:
+    name: Testing Unit/E2E
+
     runs-on: windows-latest
 
     steps:
