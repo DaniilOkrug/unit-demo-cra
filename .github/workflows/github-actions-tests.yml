@@ -18,10 +18,7 @@ jobs:
         run: npm ci
 
       - name: Playwright setup
-        run: npx playwright install 
-
-      - name: Build
-        run: npm run build --if-present
+        run: npx playwright install
 
       - name: Unit tests
         run: npm test
