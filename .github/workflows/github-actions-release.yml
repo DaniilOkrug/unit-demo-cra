@@ -3,7 +3,7 @@ name: CI-release
 on:
   push:
     tags:
-      - "v\d+"
+      - "v[0-9]+"
 
 jobs:
   release:
