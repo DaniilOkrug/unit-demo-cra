@@ -1,0 +1,21 @@
+name: CI-release
+
+on:
+  push:
+    tags:
+      - "v\d+"
+
+jobs:
+  release:
+    name: Release
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: fregante/release-with-changelog@v3
+        with:
+          token: ${{ secrets.MY_TOKEN }}
