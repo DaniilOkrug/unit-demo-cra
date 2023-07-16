@@ -1,7 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const releaseTag = core.getInput('ref');
+const releaseTag = process.env.tag;
 const authToken = core.getInput('token');
 const repository = core.getInput('repo');
 const owner = core.getInput('owner');
