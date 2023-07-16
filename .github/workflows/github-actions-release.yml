@@ -27,27 +27,56 @@ jobs:
         id: get_owner
         run: echo "::set-output name=owner::$(echo ${{ github.repository }} | cut -d '/' -f 1)"
 
-      - name: Install dependencies
-        run: npm ci
+      # - name: Install dependencies
+      #   run: npm ci
 
-      # - uses: fregante/release-with-changelog@v3
-      #   with:
-      #     token: ${{ secrets.MY_TOKEN }}
+      - name: Release info
+        id: release_info
+        run: |
+          echo "### Release Information" > release_issue.md
+          
+          VERSION=$(echo "::set-output name=version::${GITHUB_REF#refs/tags/v}")
+          RELEASE_VERSION=$(echo "$VERSION" | rev | cut -d'/' -f1 | rev)
+          echo "- Version: $RELEASE_VERSION" >> release_issue.md
+          echo "RELEASE_VERSION=$RELEASE_VERSION" >> $GITHUB_ENV
+          
+          TAG_NAME=${{ github.ref }}
+          TAG_AUTHOR=$(git show --format='%an' $TAG_NAME)
+          echo "- Author: $TAG_NAME"
 
-      # - name: Create Release Issue
-      #   run: npm run create:issue
-      #   env:
-      #     GITHUB_REF: ${{ github.ref }}
-      #     GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-      #     GITHUB_REPO: ${{ github.repository }}
-      #     GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
-      - name: "Wrapper action sample"
-        inputs:
-          name:
-            GITHUB_REF: ${{ github.ref }}
-            GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-            GITHUB_REPO: ${{ github.repository }}
-            GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
-        runs:
-          using: "node16"
-          main: "utils/createIssue.js"
+          TAG_DATE=$(date +"%Y-%m-%d")
+          echo "- Date: $CURRENT_DATE" >> release_issue.md
+          
+          echo "#### Changelog" >> release_issue.md
+          LAST_TAG=$(git describe --abbrev=0 --tags --match 'v[0-9]*')
+          TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
+          echo "$TEXT_CHANGELOG" >> release_issue.md
+
+          echo "- CI Build & Tests Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md"
+
+        - name: Get issue number
+          id: get_issue_number
+          uses: actions/github-script@v6
+          with:
+            github-token: ${{ secrets.MY_TOKEN }}
+            script: |
+              const { data } = await github.rest.issues.listForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                labels: 'release_${{ env.RELEASE_VERSION }}',
+                per_page: 1
+              });
+              if (data) {
+                const issueNumber = data.items[0]?.number;
+                console.log("Found issue: " + issueNumber);
+                core.setOutput('issue_number', issueNumber);
+              }
+
+        - name: Create release issue
+          id: create_issue
+          uses: peter-evans/create-issue-from-file@v4
+          with:
+            title: Release ${{ env.RELEASE_VERSION }}
+            issue-number: ${{ steps.get_issue_number.outputs.issue_number }}
+            content-filepath: release_issue.md
+            labels: release_${{ env.RELEASE_VERSION }}
