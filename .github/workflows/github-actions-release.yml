@@ -6,7 +6,7 @@ on:
       - "v[0-9]+"
 
 jobs:
-  release:
+  release_issue:
     name: Release
     runs-on: ubuntu-latest
     permissions:
@@ -37,14 +37,50 @@ jobs:
         id: create_update_issue
         run: |
           issue_title="Release ${{ steps.changelog.outputs.version }}"
-          issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nАвтор: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
+          issue_body="### Релиз ${{ steps.changelog.outputs.version }}
+          
+          Автор: ${{ github.actor }}
+          Дата релиза: ${{ steps.changelog.outputs.timestamp }}
+          Номер версии: ${{ steps.changelog.outputs.version }}
+
+          Changelog:
+          
+          ${{ steps.changelog.outputs.changelog }}"
 
           # Get the existing issue number, if it exists
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
-
+          echo "existing_issue_number=$existing_issue_number" >> $GITHUB_ENV
+          
           # If an existing issue is found, update its body
           if [[ -n "$existing_issue_number" ]]; then
             curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
           else
             curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
           fi
+
+  tests:
+    needs: release_issue
+    name: Testing Unit/E2E
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Playwright setup
+        run: npx playwright install
+
+      - name: Unit tests
+        run: npm test
+
+      - name: E2E tests
+        run: npx playwright test --project=chromium
+
