@@ -70,20 +70,26 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # - name: Playwright setup
-      #   run: npx playwright install
+      - name: Playwright setup
+        run: npx playwright install
 
       - name: Unit tests
         run: npm run test-ci
 
-      - name: Publish test results
+      - name: Publish Unit tests results
         uses: actions/upload-artifact@v3
         with:
-          name: Unit Test Results
+          name: Unit Tests Results
           path: test-report.html
 
-      # - name: E2E tests
-      #   run: npx playwright test --project=chromium
+      - name: E2E tests
+        run: npx playwright test --project=chromium
+
+      - name: Publish E2E tests results
+        uses: actions/upload-artifact@v3
+        with:
+          name: E2E Tests Results
+          path: ./my-report/index.html
 
   updated_issue:
     needs: tests
@@ -108,28 +114,7 @@ jobs:
           echo "${artifact_unit}"
           # curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body \n\n Результаты Unit: $artifact_unit\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
 
-  # build:
-  #   needs: tests
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
-
-  #     # - name: Setup Pages
-  #     #   uses: actions/configure-pages@v3
-
-  #     - name: Build with Jekyll
-  #       uses: actions/jekyll-build-pages@v1
-
-  #       with:
-  #         source: ./
-  #         destination: ./_site
-
-  #     - name: Upload artifact
-  #       uses: actions/upload-pages-artifact@v2
-
-  # Deployment job
-  deploy: 
+  deploy:
     needs: tests
     name: Deploy
 
@@ -150,7 +135,7 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build 
+          publish_dir: ./build
 
   finish:
     needs: [deploy, updated_issue]
