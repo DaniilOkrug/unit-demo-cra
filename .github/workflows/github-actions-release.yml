@@ -24,6 +24,6 @@ jobs:
           changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
 
           echo "Current tag: GITHUB_REF"
-          exho "Previous tag: ${previous_tag}"
+          echo "Previous tag: ${previous_tag}"
 
           echo "::set-output name=changelog::${changelog}"
