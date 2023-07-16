@@ -57,7 +57,7 @@ jobs:
     needs: release_issue
     name: Testing Unit/E2E
 
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       issues: write
 
@@ -89,6 +89,8 @@ jobs:
 
       - name: Update issue
         run: |
-          test_link="https://github.com/DaniilOkrug/unit-demo-cra/runs/${{ github.run_id }}?check_suite_focus=true"
+          test_link="https://github.com/DaniilOkrug/unit-demo-cra/runs/"
+          echo "${test_link}"
+          echo ${{ github.run_id }}
 
       # curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data-raw "{\"title\":\"$issue_title\",\"body\":\"$issue_body\ \n\n Результат тестов: $test_link\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
