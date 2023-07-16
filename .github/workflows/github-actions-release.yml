@@ -40,4 +40,5 @@ jobs:
           ref: ${{ github.ref }}
           token: ${{ secrets.MY_TOKEN }}
           repo: ${{ github.repository }}
+          owner: ${{ steps.get_owner.outputs.owner }}
 
