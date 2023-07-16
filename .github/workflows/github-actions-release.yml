@@ -5,6 +5,10 @@ on:
     tags:
       - "v[0-9]+"
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   release_issue:
     name: Release
@@ -37,7 +41,7 @@ jobs:
         id: create_update_issue
         run: |
           issue_title="Release ${{ steps.changelog.outputs.version }}"
-          issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
+          issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nhttps://daniilokrug.github.io/unit-demo-cra/ \n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
           echo "issue_body=$issue_body" >> $GITHUB_ENV
 
           # Get the existing issue number, if it exists
