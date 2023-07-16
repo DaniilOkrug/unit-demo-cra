@@ -51,7 +51,7 @@ jobs:
           fi
 
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
-          echo "existing_issue_number=$existing_issue_number"" >> $GITHUB_ENV
+          echo "existing_issue_number=$existing_issue_number" >> $GITHUB_ENV
 
   tests:
     needs: release_issue
