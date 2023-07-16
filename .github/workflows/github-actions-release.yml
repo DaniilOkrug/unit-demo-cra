@@ -26,7 +26,9 @@ jobs:
           echo "Current tag: $GITHUB_REF"
           echo "Previous tag: ${previous_tag}"
 
-          echo "::set-output name=version::${{ github.ref#refs/tags/v }}"
+          version=${{ github.ref }}
+          version=${{ version/refs\/tags\// }}
+          echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
 
       - name: ✍️ Create release issue
