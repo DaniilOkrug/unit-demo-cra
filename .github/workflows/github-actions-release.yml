@@ -40,9 +40,6 @@ jobs:
       - name: Create/Update Release Issue
         id: create_update_issue
         run: |
-          # echo "${{ steps.prep.outputs.change_log }}"
-          # changelog_single_line="$(echo -e "${{ steps.prep.outputs.change_log }}" | tr -d '\n')
-
           echo $changelog_single_line
 
           issue_title="Release ${{ steps.prep.outputs.version }}"
