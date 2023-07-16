@@ -1,6 +1,9 @@
 name: CI-tests
 
-on: [pull_request]
+on:
+  pull_request:
+    branches-ignore:
+      - gh-pages
 
 jobs:
   tests:
