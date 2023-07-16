@@ -47,7 +47,7 @@ jobs:
 
             Changelog:
 
-            ${{ ssteps.changelog.outputs.changelog }}
+            ${{ steps.changelog.outputs.changelog }}
 
             Для запуска развертывания перейдите на страницу экшена и выберите ветку релиза
 
