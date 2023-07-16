@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=version::${version}"
 
           previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
-          changelog=$(git log --pretty=oneline "$previous_tag".."$GITHUB_REF" | sed 's/"/\\"/g; s/$/\\n/')
+          changelog=$(git log --pretty=oneline "$previous_tag".."$GITHUB_REF" | sed 's/"/\\"/g; s/$/\\n\n/')
           echo "change_log<<EOF" >> $GITHUB_OUTPUT
           echo "${changelog}" >> "$GITHUB_OUTPUT"
           echo "EOF" >> $GITHUB_OUTPUT
