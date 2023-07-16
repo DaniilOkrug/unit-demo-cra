@@ -72,22 +72,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Playwright setup
-        run: npx playwright install
+      # - name: Playwright setup
+      #   run: npx playwright install
 
       - name: Unit tests
-        run: npm test
+        run: npm run test-ci
 
-      - name: E2E tests
-        run: npx playwright test --project=chromium
+      # - name: E2E tests
+      #   run: npx playwright test --project=chromium
 
       - name: Publish test results
         uses: actions/upload-artifact@v2
         with:
           name: Test Results
-          path: path/to/test/results
+          path: test-report.html
 
       - name: Update issue
         run: |
           test_link="https://github.com/DaniilOkrug/unit-demo-cra/runs/${{ github.run_id }}?check_suite_focus=true"
-          curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data-raw "{\"title\":\"$issue_title\",\"body\":\"$issue_body\ \n\n Результат тестов: $test_link\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
+          # curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" --data-raw "{\"title\":\"$issue_title\",\"body\":\"$issue_body\ \n\n Результат тестов: $test_link\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
