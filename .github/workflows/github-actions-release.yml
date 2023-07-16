@@ -38,7 +38,7 @@ jobs:
         run: |
           issue_title="Release ${{ steps.changelog.outputs.version }}"
           issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
-          echo "existing_issue_number=$issue_body >> $GITHUB_ENV
+          echo "issue_body=$issue_body" >> $GITHUB_ENV
 
           # Get the existing issue number, if it exists
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
