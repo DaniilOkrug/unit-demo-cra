@@ -22,11 +22,12 @@ jobs:
         run: |
           previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
           changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
+          version=$(echo "$GITHUB_REF" | cut -d '/' -f 3)
+          timestamp=$(git show -s --format=%ai ${GITHUB_REF})
 
           echo "Current tag: $GITHUB_REF"
           echo "Previous tag: ${previous_tag}"
 
-          version=$(echo "$GITHUB_REF" | cut -d '/' -f 3)
           echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
 
@@ -43,13 +44,11 @@ jobs:
 
             Авто: ${{ github.actor }}
 
-            Время: ${{ steps.get_tags.outputs.timestamp }}
+            Время: ${{ steps.changelog.outputs.timestamp }}
 
             Changelog:
 
             ${{ steps.changelog.outputs.changelog }}
-
-            Для запуска развертывания перейдите на страницу экшена и выберите ветку релиза
 
           pinned: false
           close-previous: false
