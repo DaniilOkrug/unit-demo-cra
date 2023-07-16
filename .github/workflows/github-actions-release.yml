@@ -30,6 +30,7 @@ jobs:
           echo "Current tag: $GITHUB_REF"
           echo "Previous tag: ${previous_tag}"
 
+          echo "::set-output name=timestamp::${timestamp}"
           echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
 
