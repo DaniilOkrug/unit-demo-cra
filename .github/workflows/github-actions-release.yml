@@ -49,7 +49,7 @@ jobs:
           TEXT_CHANGELOG=$(git log --no-color --pretty=format:"- %s (%h)%n" $LAST_TAG..HEAD)
           echo "$TEXT_CHANGELOG" >> release_issue.md
 
-          echo "- CI Build & Tests Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md"
+          echo "- CI Build & Tests Results: [Link](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})" >> release_issue.md
 
       - name: Get issue number
         id: get_issue_number
