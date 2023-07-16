@@ -41,13 +41,13 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
       #     GITHUB_REPO: ${{ github.repository }}
       #     GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
-      - name: 'Wrapper action sample'
+      - name: "Wrapper action sample"
         inputs:
           name:
             GITHUB_REF: ${{ github.ref }}
             GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
             GITHUB_REPO: ${{ github.repository }}
             GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
-          runs:
-            using: 'node16'
-            main: 'utils/createIssue.js'
+        runs:
+          using: "node16"
+          main: "utils/createIssue.js"
