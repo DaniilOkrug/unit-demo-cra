@@ -18,11 +18,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Generate Changelog
-        id: changelog
+      - name: Prepare
+        id: prep
         run: |
-          previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
-          changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
           version=$(echo "$GITHUB_REF" | cut -d '/' -f 3)
           timestamp=$(git show -s --format=%ai ${GITHUB_REF})
 
@@ -31,13 +29,15 @@ jobs:
 
           echo "::set-output name=timestamp::${timestamp}"
           echo "::set-output name=version::${version}"
-          echo "::set-output name=changelog::${changelog}"
 
       - name: Create/Update Release Issue
         id: create_update_issue
         run: |
-          issue_title="Release ${{ steps.changelog.outputs.version }}"
-          issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nhttps://daniilokrug.github.io/unit-demo-cra/ \n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
+          previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
+          changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
+
+          issue_title="Release ${{ steps.prep.outputs.version }}"
+          issue_body="### Релиз ${{ steps.prep.outputs.version }}\n\nhttps://daniilokrug.github.io/unit-demo-cra/ \n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.prep.outputs.timestamp }}\nНомер версии: ${{ steps.prep.outputs.version }}\n\nChangelog:\n\n$changelog"
           echo "issue_body=$issue_body" >> $GITHUB_ENV
 
           # Get the existing issue number, if it exists
