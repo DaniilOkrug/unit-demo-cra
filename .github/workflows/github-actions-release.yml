@@ -26,7 +26,7 @@ jobs:
           echo "Current tag: $GITHUB_REF"
           echo "Previous tag: ${previous_tag}"
 
-          version=${{ github.ref }}
+          version=${{ $GITHUB_REF }}
           version=${{ version/refs\/tags\// }}
           echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
