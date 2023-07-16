@@ -52,7 +52,6 @@ jobs:
 
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
           echo "existing_issue_number=$existing_issue_number" >> $GITHUB_ENV
-          echo "::set-output name=existing_issue_number::${existing_issue_number}"
 
   tests:
     needs: release_issue
@@ -152,4 +151,7 @@ jobs:
 
       - name: Close Issue
         run: |
-          curl -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/issues/${{ steps.release_issue.outputs.existing_issue_number }}"
+          version=$(echo "$GITHUB_REF" | cut -d '/' -f 3)
+          existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
+
+          curl -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
