@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=version::${version}"
 
           previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
-          changelog=$(git log --pretty=format:" %s" "$previous_tag".."$GITHUB_REF" | sed 's/"/\\"/g; s/$/\\n/')
+          changelog=$(git log --pretty=oneline "$previous_tag".."$GITHUB_REF" | sed 's/"/\\"/g; s/$/\\n/')
           echo "change_log<<EOF" >> $GITHUB_OUTPUT
           echo "${changelog}" >> "$GITHUB_OUTPUT"
           echo "EOF" >> $GITHUB_OUTPUT
@@ -39,10 +39,10 @@ jobs:
       - name: Create/Update Release Issue
         id: create_update_issue
         run: |
+          echo ${{ steps.prep.outputs.change_log }}
+
           issue_title="Release ${{ steps.prep.outputs.version }}"
           issue_body="### Релиз ${{ steps.prep.outputs.version }}\n\nhttps://daniilokrug.github.io/unit-demo-cra/ \n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.prep.outputs.timestamp }}\nНомер версии: ${{ steps.prep.outputs.version }}\n\nChangelog:\n\n${{ steps.prep.outputs.change_log }}"
-
-          echo "issue_body=$issue_body" >> $GITHUB_ENV
 
           # Get the existing issue number, if it exists
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
