@@ -34,10 +34,20 @@ jobs:
       #   with:
       #     token: ${{ secrets.MY_TOKEN }}
 
-      - name: Create Release Issue
-        run: npm run create:issue
-        env:
-          GITHUB_REF: ${{ github.ref }}
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-          GITHUB_REPO: ${{ github.repository }}
-          GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
+      # - name: Create Release Issue
+      #   run: npm run create:issue
+      #   env:
+      #     GITHUB_REF: ${{ github.ref }}
+      #     GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+      #     GITHUB_REPO: ${{ github.repository }}
+      #     GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
+      - name: 'Wrapper action sample'
+        inputs:
+          name:
+            GITHUB_REF: ${{ github.ref }}
+            GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+            GITHUB_REPO: ${{ github.repository }}
+            GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
+          runs:
+            using: 'node16'
+            main: 'utils/createIssue.js'
