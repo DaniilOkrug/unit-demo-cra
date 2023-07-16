@@ -31,7 +31,7 @@ jobs:
           echo "::set-output name=version::${version}"
 
           previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
-          changelog=$(git log --pretty=format:" - %s" "$previous_tag".."$GITHUB_REF")
+          changelog=$(git log --pretty=format:" %s" "$previous_tag".."$GITHUB_REF")
 
           echo "change_log<<EOF" >> $GITHUB_OUTPUT
           echo "${changelog}" >> "$GITHUB_OUTPUT"
@@ -40,7 +40,7 @@ jobs:
       - name: Create/Update Release Issue
         id: create_update_issue
         run: |
-          echo $changelog_single_line
+          echo ${{ steps.prep.outputs.change_log }}
 
           issue_title="Release ${{ steps.prep.outputs.version }}"
           issue_body=$(cat << EOF
