@@ -31,18 +31,18 @@ jobs:
         run: |
           issue_title="Release v${{ steps.extract_version.outputs.version }}"
           issue_body="Version: v${{ steps.extract_version.outputs.version }}\nChangelog:\n${{ steps.changelog.outputs.changelog }}"
-          release_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
+          release_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.MY_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
           if [[ -z "$release_issue_number" ]]; then
-            curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
+            curl -s -X POST -H "Authorization: Bearer ${{ secrets.MY_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
           else
-            curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$release_issue_number"
+            curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.MY_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$release_issue_number"
           fi
 
       - name: Close Release Issue
         if: ${{ github.event_name == 'push' }}
         run: |
           issue_title="Release v${{ steps.extract_version.outputs.version }}"
-          issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
+          issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.MY_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
           if [[ -n "$issue_number" ]]; then
-            curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"state\":\"closed\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number"
+            curl -s -X POST -H "Authorization: Bearer ${{ secrets.MY_TOKEN }}" -H "Content-Type: application/json" -d "{\"state\":\"closed\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$issue_number"
           fi
