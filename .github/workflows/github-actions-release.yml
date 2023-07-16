@@ -38,10 +38,10 @@ jobs:
         run: |
           issue_title="Release ${{ steps.changelog.outputs.version }}"
           issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
+          echo "existing_issue_number=$issue_body >> $GITHUB_ENV
 
           # Get the existing issue number, if it exists
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
-          echo "existing_issue_number=$existing_issue_number" >> $GITHUB_ENV
 
           # If an existing issue is found, update its body
           if [[ -n "$existing_issue_number" ]]; then
@@ -49,12 +49,15 @@ jobs:
           else
             curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
           fi
+          echo "existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')" >> $GITHUB_ENV
 
   tests:
     needs: release_issue
     name: Testing Unit/E2E
 
     runs-on: windows-latest
+    permissions:
+      issues: write
 
     steps:
       - uses: actions/checkout@v3
@@ -75,3 +78,14 @@ jobs:
 
       - name: E2E tests
         run: npx playwright test --project=chromium
+
+      - name: Publish test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: Test Results
+          path: path/to/test/results
+
+      - name: Update issue
+        run: |
+          test_link="https://github.com/DaniilOkrug/unit-demo-cra/runs/${{ github.run_id }}?check_suite_focus=true"
+          curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\ \n\n Результат тестов: $test_link"}" "https://api.github.com/repos/${{ github.repository }}/issues"
