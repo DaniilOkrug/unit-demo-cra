@@ -154,4 +154,4 @@ jobs:
           version=$(echo "$GITHUB_REF" | cut -d '/' -f 3)
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
 
-          curl -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d '{"state":"closed"}' "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
+          curl -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d '{"state":"closed", "state_reason": "completed"}' "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
