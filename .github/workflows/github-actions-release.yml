@@ -58,8 +58,6 @@ jobs:
     name: Testing Unit/E2E
 
     runs-on: ubuntu-latest
-    permissions:
-      issues: write
 
     steps:
       - uses: actions/checkout@v3
@@ -87,6 +85,15 @@ jobs:
       # - name: E2E tests
       #   run: npx playwright test --project=chromium
 
+  updated_issue:
+    needs: tests
+    name: Testing Unit/E2E
+
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
       - name: Update issue
         run: |
           echo ${{ github.run_id }}
