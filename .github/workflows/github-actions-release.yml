@@ -34,7 +34,7 @@ jobs:
           echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
 
-      - name: ✍️ Create release issue
+      - name: Create issue
         uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
         env:
           GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
