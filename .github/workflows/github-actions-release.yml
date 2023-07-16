@@ -107,3 +107,25 @@ jobs:
           artifact_unit=$(echo "$artifacts" | jq -r ".artifacts | map(select(.name == \"Unit Test Results\" and .workflow_run.id == $run_id)) | .[].url")
           echo "${artifact_unit}"
           # curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body \n\n Результаты Unit: $artifact_unit\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
+
+  deploy: 
+    needs: tests
+    name: Deploy
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install and Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build
