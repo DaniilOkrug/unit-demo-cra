@@ -33,23 +33,18 @@ jobs:
           echo "::set-output name=version::${version}"
           echo "::set-output name=changelog::${changelog}"
 
-      - name: Create issue
-        uses: imjohnbo/issue-bot@3d96848fb5e9a4a473bb81ae62b4b4866a56e93a
-        env:
-          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
-        with:
-          assignees: "DaniilOkrug"
-          labels: "RELEASE"
-          title: Release ${{ steps.changelog.outputs.version }}
-          body: |
-            ### Релиз ${{ steps.changelog.outputs.version }}
+      - name: Create/Update Release Issue
+        id: create_update_issue
+        run: |
+          issue_title="Release ${{ steps.changelog.outputs.version }}"
+          issue_body="### Релиз ${{ steps.changelog.outputs.version }}\n\nАвто: ${{ github.actor }}\nДата релиза: ${{ steps.changelog.outputs.timestamp }}\nНомер версии: ${{ steps.changelog.outputs.version }}\n\nChangelog:\n\n${{ steps.changelog.outputs.changelog }}"
 
-            Авто: ${{ github.actor }}
-            Время: ${{ steps.changelog.outputs.timestamp }}
+          # Get the existing issue number, if it exists
+          existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
 
-            Changelog:
-
-            ${{ steps.changelog.outputs.changelog }}
-
-          pinned: false
-          close-previous: false
+          # If an existing issue is found, update its body
+          if [[ -n "$existing_issue_number" ]]; then
+            curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
+          else
+            curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
+          fi
