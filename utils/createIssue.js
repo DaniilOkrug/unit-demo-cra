@@ -2,8 +2,14 @@ const { Octokit } = require("octokit");
 const core = require('@actions/core');
 const github = require('@actions/github');
 
-const auth = core.getInput('token')
-const octokit = new Octokit({ auth })
+const releaseTag = core.getInput('ref');
+const authToken = core.getInput('token');
+const repository = core.getInput('repo');
+
+console.log('releaseTag', releaseTag);
+console.log('repository', repository);
+
+const octokit = new Octokit({ authToken })
 
 const owner = core.getInput('owner');
 const time = (new Date()).toTimeString();
@@ -27,11 +33,11 @@ try {
     const payload = JSON.stringify(github.context.payload, undefined, 2)
     console.log(`The event payload: ${payload}`);
 
-    octokit.rest.issues.create({
-      ...REPO_INFO,
-      title: 'Relesase',
-      body: 'Release'
-    });
+    // octokit.rest.issues.create({
+    //   ...REPO_INFO,
+    //   title: 'Relesase',
+    //   body: 'Release'
+    // });
   })
 
 

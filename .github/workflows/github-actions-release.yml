@@ -18,6 +18,14 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      
+      - name: Release Version
+        id: extract_version
+        run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
+      
+      - name: Get Repository Owner
+        id: get_owner
+        run: echo "::set-output name=owner::$(echo ${{ github.repository }} | cut -d '/' -f 1)"
 
       - name: Install dependencies
         run: npm ci
@@ -27,8 +35,9 @@ jobs:
       #     token: ${{ secrets.MY_TOKEN }}
 
       - name: Create Release Issue
-        run: npm start
-        with:
+        run: npm run create:issue
+        env:
+          ref: ${{ github.ref }}
           token: ${{ secrets.MY_TOKEN }}
-          action-id: ${{ github.run_id }}
-          owner: "Daniil Okrug"
+          repo: ${{ github.repository }}
+
