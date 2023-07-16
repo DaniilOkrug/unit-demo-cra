@@ -34,7 +34,7 @@
     "e2e": "playwright test --project=chromium && playwright show-report",
     "test-ci": "CI=true npm test -- --reporters=\"default\" --reporters=\"jest-html-reporter\" --reporters=\"jest-teamcity\"",
     "prepare": "husky install",
-    "create:issue": "node utils/createIssues.js"
+    "create:issue": "node utils/createIssue.js"
   },
   "eslintConfig": {
     "extends": [
