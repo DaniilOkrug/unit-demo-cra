@@ -22,7 +22,9 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          previous_tag=$(git describe --abbrev=0 --tags --exclude="$(git describe --abbrev=0 --tags)")
+          previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
+          echo ${{previous_tag}}
+
           changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
           echo "::set-output name=changelog::${changelog}"
 
