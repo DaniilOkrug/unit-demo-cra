@@ -18,11 +18,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-      
+
       - name: Release Version
         id: extract_version
         run: echo "::set-output name=version::${GITHUB_REF#refs/tags/v}"
-      
+
       - name: Get Repository Owner
         id: get_owner
         run: echo "::set-output name=owner::$(echo ${{ github.repository }} | cut -d '/' -f 1)"
@@ -37,8 +37,7 @@ jobs:
       - name: Create Release Issue
         run: npm run create:issue
         env:
-          ref: ${{ github.ref }}
-          token: ${{ secrets.MY_TOKEN }}
-          repo: ${{ github.repository }}
-          owner: ${{ steps.get_owner.outputs.owner }}
-
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN }}
+          GITHUB_REPO: ${{ github.repository }}
+          GITHUB_OWNER: ${{ steps.get_owner.outputs.owner }}
