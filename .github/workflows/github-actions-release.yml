@@ -42,4 +42,9 @@ jobs:
           # Get the existing issue number, if it exists
           existing_issue_number=$(curl -s -X GET -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" "https://api.github.com/repos/${{ github.repository }}/issues?state=all" | jq -r '.[] | select(.title=="'"$issue_title"'") | .number')
 
-          echo "${existing_issue_number}"
+          # If an existing issue is found, update its body
+          if [[ -n "$existing_issue_number" ]]; then
+            curl -s -X PATCH -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues/$existing_issue_number"
+          else
+            curl -s -X POST -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" -H "Content-Type: application/json" -d "{\"title\":\"$issue_title\",\"body\":\"$issue_body\"}" "https://api.github.com/repos/${{ github.repository }}/issues"
+          fi
