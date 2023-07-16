@@ -34,7 +34,7 @@ jobs:
         id: create_update_issue
         run: |
           previous_tag=$(git tag --sort=-creatordate | sed -n '2p')
-          changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF")
+          changelog=$(git log --pretty=format:"- %s" "$previous_tag".."$GITHUB_REF" | sed 's/"/\\"/g; s/$/\\n/')
 
           echo $changelog
 
