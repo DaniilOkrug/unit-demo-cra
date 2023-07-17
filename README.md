@@ -1,5 +1,7 @@
 ## Проверка
 
+Телеграм: https://t.me/bellissimo_d
+
 Commitlint интегрирован с husky.
 
 ```sh
